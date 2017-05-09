@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>Kinduct Challenge Store Page</title>
+        <title>Kinduct Challenge Store Page Rishabh Aggarwal</title>
         <meta charset="UTF-8">
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="<?php echo base_url() ?>assests/bootstrap-3.3.7-dist//css/bootstrap.min.css" />
@@ -65,6 +65,7 @@ and open the template in the editor.
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 col-xs-12">
+                    <h2 id="nostore" class="text-center"></h2>
                     <table id="table_id" class="table table-striped table-bordered" cellspacing="0" width="100%">
                         <thead class="text-center">
                             <tr>
@@ -75,11 +76,7 @@ and open the template in the editor.
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-center">
-                                <td>Store 1</td>
-                                <td>34 Title's</td>
-                                <td><a href="#" class="btn btn-primary">Manage</a></td>
-                            </tr>
+
                         </tbody>
                         <tfoot>
                             <tr>
@@ -139,22 +136,34 @@ and open the template in the editor.
             });
 
             // Store Dependent On City Value DropDown.
+            $('#table_id').addClass('hidden');
             $('#city').on('change', function () {
                 var city_id = $(this).val();
                 if (city_id == '') {
                     //anything we can perform or we can change it to !==
                 } else {
-                    console.log(city_id);
                     $.ajax({
-                        url: "<?php echo base_url();?>/index.php/stores/get_stores",
+                        url: "<?php echo base_url(); ?>/index.php/stores/get_stores",
                         type: 'POST',
                         data: {'city_id': city_id},
                         success: function (data) {
-                            
-                        }, error: function () {
-
+                            var store = jQuery.parseJSON(data);
+                            console.log(store);
+                            var trHTML = $("#table_id");
+                            console.log(store.store_id);
+                            if (store.store_id === null) {
+                                document.getElementById("nostore").innerHTML = "No Store For Given City!";
+                            } else {
+                                document.getElementById("nostore").innerHTML = "";
+                                 $("#table_id").removeClass('hidden');
+                                $.each(store, function (i, item) {
+                                    console.log(store.inv_count);
+                                    trHTML = '<tr class="text-center"><td>Store ' + store.store_id + '</td><td>' + store.inv_count + ' titles</td><td><a href="<?php echo base_url(); ?>index.php/stores/customers/' + store.store_id + '" class="btn btn-primary">Manage</a></td></tr>';
+                                    //trHTML += "<tr><td>" +  + "</td><td>" + store.inv_count + "</td><td><a href='" + store.store_id + "class="btn btn-primary">Manage</a></td></tr>";
+                                });
+                                $('#table_id').append(trHTML);
+                            }
                         }
-
                     });
                 }
             });
